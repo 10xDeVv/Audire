@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Play, Square, Volume2 } from "lucide-react";
+import { LoaderCircle, Play, Square, Volume2 } from "lucide-react";
 import {
   canPlayProgression,
   scheduleProgression,
@@ -17,6 +17,7 @@ interface ListeningLabProps {
 export function ListeningLab({ original, paths }: ListeningLabProps) {
   const [tempo, setTempo] = useState(82);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const contextRef = useRef<AudioContext | null>(null);
   const sessionRef = useRef<PlaybackSession | null>(null);
@@ -42,15 +43,16 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
     setPlayingId(null);
   }
 
-  function playTrack(id: string, progression: string) {
+  async function playTrack(id: string, progression: string) {
     stopPlayback();
     setError("");
+    setLoadingId(id);
 
     try {
       const context = contextRef.current ?? new AudioContext();
       contextRef.current = context;
-      if (context.state === "suspended") void context.resume();
-      const session = scheduleProgression(context, progression, tempo);
+      if (context.state === "suspended") await context.resume();
+      const session = await scheduleProgression(context, progression, tempo);
       sessionRef.current = session;
       setPlayingId(id);
       timeoutRef.current = setTimeout(stopPlayback, session.durationMs);
@@ -60,6 +62,8 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
           ? playbackError.message
           : "Playback could not read this progression.",
       );
+    } finally {
+      setLoadingId(null);
     }
   }
 
@@ -96,6 +100,7 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
       <div className="mt-6 grid gap-3 md:grid-cols-2">
         {tracks.map((track) => {
           const isPlaying = playingId === track.id;
+          const isLoading = loadingId === track.id;
           const isPlayable = canPlayProgression(track.progression);
 
           return (
@@ -114,16 +119,27 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
               </div>
 
               <button
-                aria-label={isPlaying ? `Stop ${track.label}` : `Play ${track.label}`}
+                aria-label={
+                  isLoading
+                    ? `Loading ${track.label}`
+                    : isPlaying
+                      ? `Stop ${track.label}`
+                      : `Play ${track.label}`
+                }
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brass text-ink transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-40"
-                disabled={!isPlayable}
+                disabled={!isPlayable || loadingId !== null}
                 onClick={() =>
                   isPlaying ? stopPlayback() : playTrack(track.id, track.progression)
                 }
                 title={isPlayable ? `${isPlaying ? "Stop" : "Play"} ${track.label}` : "Chord symbols unavailable for playback"}
                 type="button"
               >
-                {isPlaying ? (
+                {isLoading ? (
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className="h-5 w-5 animate-spin"
+                  />
+                ) : isPlaying ? (
                   <Square aria-hidden="true" className="h-4 w-4" fill="currentColor" />
                 ) : (
                   <Play aria-hidden="true" className="h-5 w-5" fill="currentColor" />

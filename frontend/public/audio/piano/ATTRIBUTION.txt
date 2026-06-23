@@ -1,0 +1,8 @@
+Salamander Grand Piano v3
+Author: Alexander Holm
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+Source: https://archive.org/details/SalamanderGrandPianoV3
+Project information: https://github.com/sfzinstruments/SalamanderGrandPiano
+
+Audire includes a compact MP3 subset distributed by the Tone.js project:
+https://tonejs.github.io/audio/salamander/

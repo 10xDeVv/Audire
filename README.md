@@ -16,7 +16,7 @@ This MVP was built for MAAC 3114: AI in Music. It explores creativity, authorshi
 - FastAPI `/health` and `/analyze` endpoints
 - Structured, context-aware harmonic feedback
 - Three creative paths with explicit artistic tradeoffs
-- Browser chord playback for original and suggested progressions
+- Sampled grand-piano playback for original and suggested progressions
 - Guided practice plan with metronome and completion tracking
 - Visible AI evidence, assumptions, unknowns, and confidence
 - Local personal-agency reflection notes
@@ -125,6 +125,10 @@ cd backend
 See `backend/evals/README.md` for focused runs and report details.
 
 The current representative live suite passed 5/5 cases and 115/115 contract and music-theory checks. Stored reports are in `backend/evals/reports/`.
+
+## Audio Credit
+
+Listening Lab playback uses a compact subset of Alexander Holm's [Salamander Grand Piano](https://archive.org/details/SalamanderGrandPianoV3), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). The browser-ready MP3 samples are distributed by the Tone.js project; detailed attribution is stored with the audio files.
 
 ## Final Project Materials
 

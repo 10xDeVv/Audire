@@ -11,6 +11,26 @@ export interface PlaybackSession {
   stop: () => void;
 }
 
+interface PianoSample {
+  midi: number;
+  path: string;
+}
+
+const PIANO_SAMPLES: PianoSample[] = [
+  { midi: 36, path: "/audio/piano/C2.mp3" },
+  { midi: 42, path: "/audio/piano/Fs2.mp3" },
+  { midi: 45, path: "/audio/piano/A2.mp3" },
+  { midi: 48, path: "/audio/piano/C3.mp3" },
+  { midi: 54, path: "/audio/piano/Fs3.mp3" },
+  { midi: 57, path: "/audio/piano/A3.mp3" },
+  { midi: 60, path: "/audio/piano/C4.mp3" },
+];
+
+const pianoBuffers = new WeakMap<
+  AudioContext,
+  Promise<Map<number, AudioBuffer>>
+>();
+
 function splitProgression(progression: string): string[] {
   return progression
     .replaceAll("`", "")
@@ -53,6 +73,37 @@ function midiToFrequency(midi: number): number {
   return 440 * 2 ** ((midi - 69) / 12);
 }
 
+function loadPianoSamples(
+  context: AudioContext,
+): Promise<Map<number, AudioBuffer>> {
+  const cached = pianoBuffers.get(context);
+  if (cached) return cached;
+
+  const pending = Promise.all(
+    PIANO_SAMPLES.map(async ({ midi, path }) => {
+      const response = await fetch(path);
+      if (!response.ok) {
+        throw new Error(`Could not load piano sample ${path}.`);
+      }
+
+      const buffer = await context.decodeAudioData(await response.arrayBuffer());
+      return [midi, buffer] as const;
+    }),
+  ).then((samples) => new Map(samples));
+
+  pianoBuffers.set(context, pending);
+  pending.catch(() => pianoBuffers.delete(context));
+  return pending;
+}
+
+function nearestPianoSample(midi: number): PianoSample {
+  return PIANO_SAMPLES.reduce((nearest, candidate) =>
+    Math.abs(candidate.midi - midi) < Math.abs(nearest.midi - midi)
+      ? candidate
+      : nearest,
+  );
+}
+
 export function canPlayProgression(progression: string): boolean {
   try {
     const symbols = splitProgression(progression);
@@ -62,17 +113,11 @@ export function canPlayProgression(progression: string): boolean {
   }
 }
 
-export function scheduleProgression(
+function scheduleSynthProgression(
   context: AudioContext,
-  progression: string,
+  chords: ParsedChord[],
   tempo: number,
 ): PlaybackSession {
-  const chords = splitProgression(progression).map(parseChord);
-
-  if (chords.length === 0) {
-    throw new Error("Enter chord symbols separated by hyphens to use playback.");
-  }
-
   const activeOscillators: OscillatorNode[] = [];
   const secondsPerBeat = 60 / tempo;
   const chordDuration = secondsPerBeat * 2;
@@ -115,4 +160,82 @@ export function scheduleProgression(
       });
     },
   };
+}
+
+function schedulePianoProgression(
+  context: AudioContext,
+  chords: ParsedChord[],
+  tempo: number,
+  buffers: Map<number, AudioBuffer>,
+): PlaybackSession {
+  const activeSources: AudioBufferSourceNode[] = [];
+  const secondsPerBeat = 60 / tempo;
+  const chordDuration = secondsPerBeat * 2;
+  const startAt = context.currentTime + 0.06;
+
+  chords.forEach((chord, chordIndex) => {
+    const chordStart = startAt + chordIndex * chordDuration;
+    const chordEnd = chordStart + chordDuration;
+    const notes = [chord.bassMidi, ...chord.voiceMidis];
+    const peakGain = 0.48 / Math.sqrt(notes.length);
+
+    notes.forEach((midi) => {
+      const sample = nearestPianoSample(midi);
+      const buffer = buffers.get(sample.midi);
+      if (!buffer) return;
+
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      source.buffer = buffer;
+      source.playbackRate.setValueAtTime(
+        2 ** ((midi - sample.midi) / 12),
+        chordStart,
+      );
+      gain.gain.setValueAtTime(0.0001, chordStart);
+      gain.gain.exponentialRampToValueAtTime(peakGain, chordStart + 0.015);
+      gain.gain.setValueAtTime(
+        peakGain,
+        Math.max(chordStart + 0.02, chordEnd - 0.18),
+      );
+      gain.gain.exponentialRampToValueAtTime(0.0001, chordEnd);
+
+      source.connect(gain);
+      gain.connect(context.destination);
+      source.start(chordStart);
+      source.stop(chordEnd + 0.03);
+      activeSources.push(source);
+    });
+  });
+
+  return {
+    durationMs: (chords.length * chordDuration + 0.1) * 1000,
+    stop: () => {
+      activeSources.forEach((source) => {
+        try {
+          source.stop();
+        } catch {
+          // A source that already ended needs no further cleanup.
+        }
+      });
+    },
+  };
+}
+
+export async function scheduleProgression(
+  context: AudioContext,
+  progression: string,
+  tempo: number,
+): Promise<PlaybackSession> {
+  const chords = splitProgression(progression).map(parseChord);
+
+  if (chords.length === 0) {
+    throw new Error("Enter chord symbols separated by hyphens to use playback.");
+  }
+
+  try {
+    const buffers = await loadPianoSamples(context);
+    return schedulePianoProgression(context, chords, tempo, buffers);
+  } catch {
+    return scheduleSynthProgression(context, chords, tempo);
+  }
 }

@@ -2,6 +2,8 @@
 
 Audire is an AI-assisted music learning prototype for self-taught musicians. The name comes from Latin *audire*, “to hear” or “to listen,” and is pronounced **ow-DEE-ray**. The app explains short musical ideas, offers contrasting creative directions, and turns feedback into a practice session while keeping artistic judgment with the musician.
 
+**Live demo:** [http://178.128.239.153](http://178.128.239.153)
+
 ## Why It Exists
 
 This MVP was built for MAAC 3114: AI in Music. It explores creativity, authorship, agency, access, cultural bias, and standardization. Its central design question is not whether AI can produce the “best” progression, but whether it can help a musician listen and choose more intentionally.

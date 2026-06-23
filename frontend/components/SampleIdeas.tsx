@@ -33,7 +33,7 @@ interface SampleIdeasProps {
 
 export function SampleIdeas({ onSelect }: SampleIdeasProps) {
   return (
-    <section className="space-y-5">
+    <section className="section-reveal space-y-5">
       <div>
         <p className="text-sm font-semibold uppercase text-moss">
           Samples
@@ -46,7 +46,7 @@ export function SampleIdeas({ onSelect }: SampleIdeasProps) {
       <div className="grid gap-4 md:grid-cols-3">
         {samples.map((sample) => (
           <button
-            className="rounded-lg border border-paper/[0.12] bg-paper/[0.06] p-5 text-left transition hover:border-brass/70 hover:bg-paper/[0.09]"
+            className="ui-lift rounded-lg border border-paper/[0.12] bg-paper/[0.06] p-5 text-left hover:bg-paper/[0.09]"
             key={sample.title}
             onClick={() => onSelect(sample)}
             type="button"

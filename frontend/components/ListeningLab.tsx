@@ -70,7 +70,7 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
   useEffect(() => stopPlayback, []);
 
   return (
-    <section className="border-y border-paper/10 py-8">
+    <section className="section-reveal border-y border-paper/10 py-8">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
           <p className="text-sm font-semibold uppercase text-moss">Listening lab</p>
@@ -105,7 +105,7 @@ export function ListeningLab({ original, paths }: ListeningLabProps) {
 
           return (
             <div
-              className="flex min-h-24 items-center justify-between gap-4 rounded-lg border border-paper/[0.12] bg-ink/[0.38] p-4"
+              className="ui-lift flex min-h-24 items-center justify-between gap-4 rounded-lg border border-paper/[0.12] bg-ink/[0.38] p-4"
               key={track.id}
             >
               <div className="min-w-0">

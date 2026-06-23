@@ -1,8 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Circle, Pause, Play, TimerReset } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  Circle,
+  LockKeyhole,
+  Pause,
+  PencilLine,
+  Play,
+  TimerReset,
+  XCircle,
+} from "lucide-react";
 import type { AIReflection, CreativePath, PracticeStep } from "@/lib/types";
+
+type AgencyDecision = "Keep" | "Adapt" | "Reject";
+
+const decisions = [
+  { label: "Keep", icon: CheckCircle2 },
+  { label: "Adapt", icon: PencilLine },
+  { label: "Reject", icon: XCircle },
+] as const;
 
 interface PracticeAgencyLabProps {
   plan: PracticeStep[];
@@ -18,8 +36,9 @@ export function PracticeAgencyLab({
   const [completed, setCompleted] = useState<boolean[]>(() => plan.map(() => false));
   const [tempo, setTempo] = useState(72);
   const [metronomeOn, setMetronomeOn] = useState(false);
-  const [agencyRating, setAgencyRating] = useState(3);
+  const [decision, setDecision] = useState<AgencyDecision>("Adapt");
   const [note, setNote] = useState("");
+  const [reflectionLoaded, setReflectionLoaded] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const contextRef = useRef<AudioContext | null>(null);
 
@@ -71,26 +90,47 @@ export function PracticeAgencyLab({
   }, [plan]);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("audire-practice-reflection");
-    if (!saved) return;
+    setReflectionLoaded(false);
+    const storageKey = `audire-agency:${selectedPath.progression}`;
+    const saved = window.localStorage.getItem(storageKey);
+    if (!saved) {
+      setDecision("Adapt");
+      setNote("");
+      setReflectionLoaded(true);
+      return;
+    }
     try {
-      const parsed = JSON.parse(saved) as { agencyRating?: number; note?: string };
-      if (typeof parsed.agencyRating === "number") setAgencyRating(parsed.agencyRating);
+      const parsed = JSON.parse(saved) as {
+        decision?: AgencyDecision;
+        note?: string;
+      };
+      if (
+        parsed.decision === "Keep" ||
+        parsed.decision === "Adapt" ||
+        parsed.decision === "Reject"
+      ) {
+        setDecision(parsed.decision);
+      }
       if (typeof parsed.note === "string") setNote(parsed.note);
     } catch {
-      window.localStorage.removeItem("audire-practice-reflection");
+      window.localStorage.removeItem(storageKey);
+      setDecision("Adapt");
+      setNote("");
+    } finally {
+      setReflectionLoaded(true);
     }
-  }, []);
+  }, [selectedPath.progression]);
 
   useEffect(() => {
+    if (!reflectionLoaded) return;
     window.localStorage.setItem(
-      "audire-practice-reflection",
-      JSON.stringify({ agencyRating, note }),
+      `audire-agency:${selectedPath.progression}`,
+      JSON.stringify({ decision, note }),
     );
-  }, [agencyRating, note]);
+  }, [decision, note, reflectionLoaded, selectedPath.progression]);
 
   return (
-    <section className="space-y-8">
+    <section className="section-reveal space-y-8">
       <div>
         <p className="text-sm font-semibold uppercase text-moss">Practice & agency</p>
         <h2 className="mt-2 font-display text-3xl text-paper sm:text-4xl">
@@ -142,7 +182,7 @@ export function PracticeAgencyLab({
             return (
               <button
                 aria-pressed={isComplete}
-                className={`flex w-full gap-4 rounded-lg border p-5 text-left transition ${
+                className={`ui-lift flex w-full gap-4 rounded-lg border p-5 text-left ${
                   isComplete
                     ? "border-moss bg-moss/10"
                     : "border-paper/[0.12] bg-paper/[0.05] hover:border-brass/60"
@@ -185,52 +225,81 @@ export function PracticeAgencyLab({
         </div>
 
         <aside className="border-l-0 border-paper/10 lg:border-l lg:pl-8">
-          <div className="flex items-center justify-between gap-4">
-            <h3 className="text-xl font-bold text-paper">AI lens</h3>
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h3 className="text-xl font-bold text-paper">AI confidence & limits</h3>
+              <p className="mt-1 text-sm text-paper/50">How much should you trust this reading?</p>
+            </div>
             <span className="rounded-lg border border-brass/[0.35] px-3 py-1 text-sm font-bold text-brass">
               {reflection.confidence} confidence
             </span>
           </div>
+          <p className="mt-4 rounded-lg border border-moss/30 bg-moss/10 px-4 py-3 text-sm leading-6 text-paper/70">
+            This confidence describes the AI&apos;s interpretation. It is not a score
+            for your playing or your original idea.
+          </p>
           <p className="mt-3 text-sm leading-6 text-paper/60">
             {reflection.confidenceReason}
           </p>
 
-          <ReflectionList items={reflection.evidence} title="Evidence" />
+          <ReflectionList items={reflection.evidence} title="What the AI can support" />
           <ReflectionList
             emptyText="No extra assumptions were needed."
             items={reflection.assumptions}
-            title="Assumptions"
+            title="What the AI assumed"
           />
-          <ReflectionList items={reflection.unknowns} title="Still unknown" />
+          <ReflectionList items={reflection.unknowns} title="What the AI cannot know yet" />
 
           <div className="mt-7 border-t border-paper/10 pt-6">
-            <label className="block text-sm font-bold text-paper">
-              Does this direction still sound like you?
-              <input
-                aria-label="Personal style rating"
-                className="mt-4 w-full accent-brass"
-                max="5"
-                min="1"
-                onChange={(event) => setAgencyRating(Number(event.target.value))}
-                type="range"
-                value={agencyRating}
-              />
-              <span className="mt-2 flex justify-between font-normal text-paper/[0.45]">
-                <span>Not really</span>
-                <span>Very much</span>
-              </span>
-            </label>
+            <h4 className="text-lg font-bold text-paper">Your verdict on the AI suggestion</h4>
+            <p className="mt-2 text-sm leading-6 text-paper/60">
+              Judge the suggestion, not your musicianship. What should happen to it?
+            </p>
+
+            <div
+              aria-label="Decision about the AI suggestion"
+              className="mt-4 grid grid-cols-3 overflow-hidden rounded-lg border border-paper/15"
+              role="group"
+            >
+              {decisions.map(({ label, icon: Icon }) => {
+                const isSelected = decision === label;
+                return (
+                  <button
+                    aria-pressed={isSelected}
+                    className={`flex min-h-12 items-center justify-center gap-2 border-r border-paper/15 px-2 text-sm font-bold transition last:border-r-0 ${
+                      isSelected
+                        ? "bg-brass text-ink"
+                        : "bg-paper/[0.04] text-paper/65 hover:bg-paper/[0.09] hover:text-paper"
+                    }`}
+                    key={label}
+                    onClick={() => setDecision(label)}
+                    type="button"
+                  >
+                    <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             <label className="mt-6 block space-y-2">
-              <span className="text-sm font-bold text-paper">What did your ear decide?</span>
+              <span className="text-sm font-bold text-paper">Why did your ear decide that?</span>
               <textarea
                 className="min-h-24 w-full resize-y rounded-lg border border-paper/[0.15] bg-ink/70 px-3 py-2 text-paper placeholder:text-paper/30"
                 maxLength={500}
                 onChange={(event) => setNote(event.target.value)}
-                placeholder="Keep the movement, simplify it, or reject it."
+                placeholder="For example: I like the movement, but I would simplify the last chord."
                 value={note}
               />
             </label>
+
+            <p className="mt-4 flex gap-2 rounded-lg bg-paper/[0.045] px-3 py-3 text-xs leading-5 text-paper/50">
+              <LockKeyhole aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-moss" />
+              <span>
+                Saved only in this browser for this path. It is not sent to the AI
+                and does not change the model or future feedback.
+              </span>
+            </p>
           </div>
         </aside>
       </div>

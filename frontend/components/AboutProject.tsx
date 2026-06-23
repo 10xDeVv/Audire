@@ -1,6 +1,6 @@
 export function AboutProject() {
   return (
-    <section className="rounded-lg border border-paper/[0.12] bg-ink/[0.55] p-6 md:p-8">
+    <section className="section-reveal rounded-lg border border-paper/[0.12] bg-ink/[0.55] p-6 md:p-8">
       <p className="text-sm font-semibold uppercase text-moss">
         About the project
       </p>

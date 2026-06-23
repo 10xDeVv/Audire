@@ -19,7 +19,7 @@ export function CreativePaths({
   onSelect,
 }: CreativePathsProps) {
   return (
-    <section className="space-y-5">
+    <section className="section-reveal space-y-5">
       <div>
         <p className="text-sm font-semibold uppercase text-moss">Creative paths</p>
         <h2 className="mt-2 font-display text-3xl text-paper sm:text-4xl">
@@ -34,7 +34,7 @@ export function CreativePaths({
 
           return (
             <article
-              className={`rounded-lg border p-5 transition ${
+              className={`ui-lift rounded-lg border p-5 ${
                 isSelected
                   ? "border-brass bg-brass/[0.09]"
                   : "border-paper/[0.12] bg-paper/[0.055]"

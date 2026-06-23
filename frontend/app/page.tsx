@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AboutProject } from "@/components/AboutProject";
+import { AnalysisSkeleton } from "@/components/AnalysisSkeleton";
 import { CreativePaths } from "@/components/CreativePaths";
 import { FeedbackResult } from "@/components/FeedbackResult";
 import { Hero } from "@/components/Hero";
@@ -37,7 +38,11 @@ export default function Home() {
     }
 
     setIsLoading(true);
+    setResult(null);
     setError("");
+    window.setTimeout(() => {
+      document.getElementById("analysis-progress")?.scrollIntoView({ block: "start" });
+    }, 50);
 
     try {
       const feedback = await analyzeMusicIdea({
@@ -58,6 +63,9 @@ export default function Home() {
           ? requestError.message
           : "Audire could not analyze that idea right now.",
       );
+      window.setTimeout(() => {
+        document.getElementById("idea-form")?.scrollIntoView({ block: "center" });
+      }, 50);
     } finally {
       setIsLoading(false);
     }
@@ -79,8 +87,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-5 py-8 sm:px-8 lg:px-10 lg:py-12">
-        <div className="grid min-h-[calc(100vh-6rem)] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-6 sm:gap-14 sm:px-8 sm:py-8 lg:px-10 lg:py-12">
+        <div className="grid min-h-[calc(100vh-3rem)] items-center gap-10 lg:min-h-[calc(100vh-6rem)] lg:grid-cols-[0.95fr_1.05fr]">
           <Hero />
           <MusicIdeaForm
             error={error}
@@ -99,7 +107,7 @@ export default function Home() {
           />
         </div>
 
-        <FeedbackResult result={result} />
+        {isLoading ? <AnalysisSkeleton /> : <FeedbackResult result={result} />}
         {result && selectedPath ? (
           <>
             <CreativePaths
@@ -109,6 +117,7 @@ export default function Home() {
             />
             <ListeningLab original={idea} paths={result.creativePaths} />
             <PracticeAgencyLab
+              key={selectedPath.progression}
               plan={result.practicePlan}
               reflection={result.aiReflection}
               selectedPath={selectedPath}

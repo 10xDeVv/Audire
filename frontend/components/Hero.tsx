@@ -1,31 +1,41 @@
 export function Hero() {
+  const waveform = [
+    20, 34, 48, 30, 62, 82, 56, 36, 70, 96, 64, 42, 78, 54, 88, 68, 40,
+    74, 50, 32, 58, 84, 46, 28, 38,
+  ];
+
   return (
-    <section className="space-y-8">
-      <div className="inline-flex items-center gap-3 rounded-lg border border-paper/[0.15] bg-paper/[0.08] px-4 py-2 text-sm text-paper/80">
-        <span className="h-2 w-2 rounded-full bg-brass shadow-[0_0_20px_rgba(217,180,111,0.8)]" />
-        ow-DEE-ray
+    <section className="section-reveal space-y-8">
+      <div className="flex max-w-xl items-center gap-4 text-sm font-semibold uppercase text-brass sm:text-base">
+        <span aria-hidden="true" className="h-px w-10 shrink-0 bg-brass/70" />
+        <span>Latin: audīre · to hear, to listen</span>
       </div>
 
-      <div className="space-y-5">
-        <h1 className="font-display text-5xl leading-none text-paper sm:text-6xl lg:text-7xl">
+      <div>
+        <h1 className="font-display text-6xl italic leading-none text-brass sm:text-7xl lg:text-8xl">
           Audire
         </h1>
-        <p className="max-w-xl text-2xl font-semibold text-brass sm:text-3xl">
-          AI feedback for self-taught musicians.
+        <p className="mt-3 text-base font-semibold text-paper/55 sm:text-lg">
+          ow-DEE-ray
         </p>
-        <p className="max-w-2xl text-base leading-8 text-paper/[0.72] sm:text-lg">
+        <p className="mt-8 max-w-2xl text-lg leading-8 text-paper/[0.72] sm:text-xl sm:leading-9">
           A reflective music-learning prototype that listens to your ideas and
           helps you develop them without replacing your personal style.
         </p>
       </div>
 
-      <div className="flex h-28 max-w-md items-end gap-3 rounded-lg border border-paper/10 bg-ink/[0.45] p-5 shadow-glow">
-        {[42, 76, 56, 92, 64].map((height) => (
+      <div className="relative flex h-28 max-w-xl items-center gap-1.5 overflow-hidden rounded-lg border border-paper/10 bg-ink/[0.45] px-5 shadow-glow sm:gap-2">
+        <span aria-hidden="true" className="absolute inset-x-5 top-1/2 h-px bg-paper/10" />
+        {waveform.map((height, index) => (
           <div
             aria-hidden="true"
-            className="wave-bar w-full rounded bg-gradient-to-t from-ember via-brass to-paper/[0.85]"
-            key={height}
-            style={{ height }}
+            className="waveform-bar relative z-10 w-full rounded-full bg-gradient-to-b from-paper/80 via-brass to-ember"
+            key={`${height}-${index}`}
+            style={{
+              animationDelay: `${index * -0.08}s`,
+              animationDuration: `${1.35 + (index % 5) * 0.11}s`,
+              height: `${height}%`,
+            }}
           />
         ))}
       </div>

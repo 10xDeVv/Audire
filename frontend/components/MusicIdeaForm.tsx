@@ -51,7 +51,8 @@ export function MusicIdeaForm({
 
   return (
     <form
-      className="rounded-lg border border-paper/[0.12] bg-paper/[0.07] p-5 shadow-2xl shadow-black/25 backdrop-blur md:p-6"
+      className="section-reveal rounded-lg border border-paper/[0.12] bg-paper/[0.07] p-5 shadow-2xl shadow-black/25 backdrop-blur md:p-6"
+      id="idea-form"
       onSubmit={handleSubmit}
     >
       <div className="space-y-5">

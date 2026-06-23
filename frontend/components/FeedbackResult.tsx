@@ -20,7 +20,7 @@ export function FeedbackResult({ result }: FeedbackResultProps) {
   ] as const;
 
   return (
-    <section className="space-y-5" id="feedback">
+    <section className="section-reveal space-y-5" id="feedback">
       <div>
         <p className="text-sm font-semibold uppercase text-moss">
           Feedback

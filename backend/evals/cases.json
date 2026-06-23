@@ -1,0 +1,320 @@
+[
+  {
+    "id": "ambiguous_minor_move",
+    "name": "Ambiguous minor-seventh movement without a key",
+    "tags": ["ambiguity", "rnb", "regression"],
+    "request": {
+      "idea": "Dm7 - Gm7",
+      "style": "R&B",
+      "skillLevel": "Intermediate",
+      "keyCenter": "",
+      "goal": "Add passing chords while keeping it smooth."
+    },
+    "allowedConfidence": ["Low", "Medium"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "ambiguous|no (?:stated )?(?:key|tonal center)|without (?:a )?(?:stated )?(?:key|tonal center)",
+        "message": "Analysis must acknowledge that the tonal center is unknown."
+      },
+      {
+        "field": "musicalAnalysis",
+        "pattern": "shared? (?:tones? )?.*d.*f|d and f",
+        "message": "Analysis should identify D and F as shared tones."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "all",
+        "pattern": "(?:functions?|serves?|acts?) as (?:a )?ii[–-]?v",
+        "message": "Dm7-Gm7 must not be presented as a ii-V without qualification."
+      },
+      {
+        "field": "all",
+        "pattern": "(?:is|creates|forms) (?:a )?(?:standard )?ii[–-]?v",
+        "message": "Dm7-Gm7 is not a standard ii-V."
+      }
+    ]
+  },
+  {
+    "id": "d_minor_i_iv",
+    "name": "Tonic to subdominant in D minor",
+    "tags": ["minor", "function", "rnb", "regression"],
+    "request": {
+      "idea": "Dm7 - Gm7",
+      "style": "R&B",
+      "skillLevel": "Intermediate",
+      "keyCenter": "D minor",
+      "goal": "Add one smooth passing chord."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "i7.*iv7|tonic.*subdominant",
+        "message": "Dm7-Gm7 should be identified as i7-iv7 in D minor."
+      },
+      {
+        "field": "suggestions",
+        "pattern": "d7.*gm7",
+        "message": "A defensible D7 approach to Gm7 should be considered."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "(?:is|forms|creates) (?:a )?ii[–-]?v",
+        "message": "The original two chords are not ii-V in D minor."
+      }
+    ]
+  },
+  {
+    "id": "c_major_ii_v_i",
+    "name": "Major ii-V-I in C",
+    "tags": ["jazz", "cadence", "major"],
+    "request": {
+      "idea": "Dm7 - G7 - Cmaj7",
+      "style": "Jazz",
+      "skillLevel": "Intermediate",
+      "keyCenter": "C major",
+      "goal": "Improve the voice leading."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "ii[–-]?v[–-]?i|ii7.*v7.*i",
+        "message": "The progression should be identified as ii-V-I in C major."
+      },
+      {
+        "field": "all",
+        "pattern": "f.*(?:e|b)|b.*(?:c|e)",
+        "message": "Feedback should discuss concrete guide-tone or semitone movement."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "g minor seventh|gm7",
+        "message": "The G chord is G7, not Gm7."
+      }
+    ]
+  },
+  {
+    "id": "bb_major_ii_v_i",
+    "name": "Major ii-V-I in B-flat",
+    "tags": ["jazz", "cadence", "flat-keys"],
+    "request": {
+      "idea": "Cm7 - F7 - Bbmaj7",
+      "style": "Jazz",
+      "skillLevel": "Intermediate",
+      "keyCenter": "Bb major",
+      "goal": "Make the resolution smoother."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "ii[–-]?v[–-]?i|ii7.*v7.*i",
+        "message": "The progression should be identified as ii-V-I in Bb major."
+      },
+      {
+        "field": "all",
+        "pattern": "a.*bb|eb.*d|e♭.*d",
+        "message": "Feedback should identify a real resolution into Bbmaj7."
+      }
+    ],
+    "forbidden": []
+  },
+  {
+    "id": "pop_i_vi_iv_v",
+    "name": "Pop I-vi-IV-V in C",
+    "tags": ["pop", "beginner", "function"],
+    "request": {
+      "idea": "C - Am - F - G",
+      "style": "Pop",
+      "skillLevel": "Beginner",
+      "keyCenter": "C major",
+      "goal": "Make it less repetitive without adding hard chords."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "\\bi\\b.*\\bvi\\b.*\\biv\\b.*\\bv\\b",
+        "message": "The functional order should be I-vi-IV-V."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "all",
+        "pattern": "ii[–-]?v[–-]?i",
+        "message": "This progression is not a ii-V-I."
+      }
+    ]
+  },
+  {
+    "id": "worship_f_major",
+    "name": "Worship I-IV-V-I in F",
+    "tags": ["worship", "beginner", "function"],
+    "request": {
+      "idea": "F - Bb - C - F",
+      "style": "Worship",
+      "skillLevel": "Beginner",
+      "keyCenter": "F major",
+      "goal": "Make it more emotional without making it complex."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "\\bi\\b.*\\biv\\b.*\\bv\\b.*\\bi\\b|tonic.*subdominant.*dominant.*tonic",
+        "message": "The progression should be identified as I-IV-V-I."
+      }
+    ],
+    "forbidden": []
+  },
+  {
+    "id": "gospel_secondary_dominants",
+    "name": "Gospel movement with secondary dominants",
+    "tags": ["gospel", "secondary-dominants", "advanced"],
+    "request": {
+      "idea": "Cmaj7 - E7 - Am7 - D7 - G7",
+      "style": "Gospel",
+      "skillLevel": "Advanced",
+      "keyCenter": "C major",
+      "goal": "Explain the pull between the chords."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "all",
+        "pattern": "e7.*(?:secondary dominant|v7/?vi)|(?:secondary dominant|v7/?vi).*e7",
+        "message": "E7 should be explained as a dominant leading toward Am."
+      },
+      {
+        "field": "all",
+        "pattern": "d7.*(?:secondary dominant|v7/?v)|(?:secondary dominant|v7/?v).*d7",
+        "message": "D7 should be explained as a dominant leading toward G."
+      }
+    ],
+    "forbidden": []
+  },
+  {
+    "id": "g_minor_ii_v_i",
+    "name": "Minor ii-V-i in G minor",
+    "tags": ["jazz", "minor", "cadence"],
+    "request": {
+      "idea": "Am7b5 - D7 - Gm7",
+      "style": "Jazz",
+      "skillLevel": "Advanced",
+      "keyCenter": "G minor",
+      "goal": "Explain the minor resolution."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "ii.*v.*i|half[- ]diminished.*dominant.*tonic",
+        "message": "The progression should be identified as a minor ii-V-i."
+      },
+      {
+        "field": "all",
+        "pattern": "f#.*g|f♯.*g",
+        "message": "Feedback should identify F# resolving to G."
+      }
+    ],
+    "forbidden": []
+  },
+  {
+    "id": "slash_chord_bass",
+    "name": "First-inversion slash chord",
+    "tags": ["slash-chords", "bass", "pop"],
+    "request": {
+      "idea": "C/E - F - G - C",
+      "style": "Pop",
+      "skillLevel": "Intermediate",
+      "keyCenter": "C major",
+      "goal": "Use the bass line to connect the chords."
+    },
+    "allowedConfidence": ["High"],
+    "required": [
+      {
+        "field": "all",
+        "pattern": "first inversion|e in the bass|bass.*e",
+        "message": "C/E must be recognized as C major with E in the bass."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "all",
+        "pattern": "c major.*e minor|c/e.*e minor",
+        "message": "C/E must not be parsed as two separate chords or E minor."
+      }
+    ]
+  },
+  {
+    "id": "single_chord_context",
+    "name": "Single chord with limited context",
+    "tags": ["limits", "beginner"],
+    "request": {
+      "idea": "Cmaj7",
+      "style": "R&B",
+      "skillLevel": "Beginner",
+      "keyCenter": "C major",
+      "goal": "Help me develop this idea."
+    },
+    "allowedConfidence": ["Medium", "High"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "tonic|\\bi(?:maj7)?\\b",
+        "message": "Cmaj7 should be recognized as a tonic-quality chord in C major."
+      },
+      {
+        "field": "aiReflection.unknowns",
+        "pattern": "next chord|progression|direction|movement|rhythm|voicing",
+        "message": "The model should expose what a single chord cannot establish."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "this cadence|the cadence resolves",
+        "message": "One chord does not establish a cadence."
+      }
+    ]
+  },
+  {
+    "id": "vague_text_input",
+    "name": "Vague musical description without chord symbols",
+    "tags": ["limits", "accessibility", "text"],
+    "request": {
+      "idea": "A slow, sad progression that feels unresolved",
+      "style": "Other",
+      "skillLevel": "Beginner",
+      "keyCenter": "",
+      "goal": "Help me understand why it feels unfinished."
+    },
+    "allowedConfidence": ["Low"],
+    "required": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "not (?:enough|provided)|without (?:the )?(?:chords|notes|key)|cannot determine|can'?t determine|no chord symbols",
+        "message": "The analysis must state that the text lacks harmonic evidence."
+      },
+      {
+        "field": "aiReflection.unknowns",
+        "pattern": "chord|key|voicing|melody|rhythm",
+        "message": "Unknown musical details should be visible."
+      }
+    ],
+    "forbidden": [
+      {
+        "field": "musicalAnalysis",
+        "pattern": "\\bi[–-]?iv[–-]?v\\b|\\bii[–-]?v[–-]?i\\b",
+        "message": "The model must not invent a functional progression."
+      }
+    ]
+  }
+]
